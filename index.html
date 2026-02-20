@@ -1,29 +1,74 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>加载中</title>
-<style>body{background:#fff;margin:0;padding:20px;text-align:center;color:#666;font-size:14px;}</style>
-
+<title>文章详情</title>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+  }
+  .loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  iframe {
+    width: 100%;
+    height: 100vh;
+    border: none;
+    display: none;
+  }
+</style>
 <script>
-// 从网址参数里取 base64 并跳转
-function getQuery(name) {
-  let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-  let r = window.location.search.substr(1).match(reg);
-  return r ? decodeURIComponent(r[2]) : "";
-}
-
-function base64UrlDecode(str) {
-  str = str.replace(/-/g, "+").replace(/_/g, "/");
-  while (str.length % 4) str += "=";
-  return decodeURIComponent(escape(atob(str)));
+function getQuery(k) {
+  return new URLSearchParams(location.search).get(k);
 }
 
 let b64 = getQuery("url");
 if (b64) {
-  let realUrl = base64UrlDecode(b64);
-  window.location.replace(realUrl);
+  let u = decodeURIComponent(atob(b64));
+  
+  // 显示加载动画3秒，再加载目标网站
+  setTimeout(() => {
+    document.querySelector('.loading').style.display = 'none';
+    let iframe = document.createElement('iframe');
+    iframe.src = u;
+    iframe.style.display = 'block';
+    document.body.appendChild(iframe);
+    
+    // 尝试隐藏地址栏
+    if (history.pushState) {
+      history.pushState(null, null, window.location.pathname);
+    }
+  }, 3000);
 } else {
-  document.body.innerHTML = "请在网址后加上 ?url=base64编码";
+  document.body.innerHTML = "<div style='text-align:center;padding:50px;'>参数缺失</div>";
 }
 </script>
-
-<body>页面加载中，请稍候...</body>
+<body>
+  <div class="loading">
+    <div class="spinner"></div>
+    <p>正在加载内容，请稍候...</p>
+  </div>
+</body>
