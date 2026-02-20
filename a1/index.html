@@ -3,10 +3,12 @@
 <title>文章详情</title>
 <style>
   body { margin: 0; padding: 0; }
-  iframe { width: 100%; height: 100vh; border: none; }
+  iframe { width: 100%; height: 100vh; border: none; display: none; }
   .fake-content {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: #fff; z-index: -1;
+    background: #fff; z-index: 999;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    font-family: sans-serif;
   }
 </style>
 <script>
@@ -14,12 +16,25 @@ function getQuery(k){return new URLSearchParams(location.search).get(k)}
 let b64=getQuery("url");
 if(b64){
   let u=decodeURIComponent(atob(b64));
-  document.write('<iframe src="'+u+'"></iframe>');
+  
+  // 先显示伪装内容3秒，再加载目标网站
+  setTimeout(() => {
+    document.querySelector('.fake-content').style.display = 'none';
+    let iframe = document.createElement('iframe');
+    iframe.src = u;
+    iframe.style.display = 'block';
+    document.body.appendChild(iframe);
+    
+    // 尝试隐藏地址栏（部分浏览器有效）
+    if (history.pushState) {
+      history.pushState(null, null, window.location.pathname);
+    }
+  }, 3000);
 }
 </script>
 <body>
   <div class="fake-content">
-    <h1>文章标题</h1>
-    <p>这里是伪装的文章内容...</p>
+    <h1>文章详情</h1>
+    <p>正在加载内容，请稍候...</p>
   </div>
 </body>
